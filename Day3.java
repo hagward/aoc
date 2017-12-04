@@ -39,14 +39,14 @@ public class Day3 {
     }
 
     private static int sum(int square) {
+        int size = 1024;
         int direction = 0;
         int stepsToTake = 1;
-        int x = 0;
-        int y = 0;
-        int[][] m = new int[1024][1024];
-        int p = 512;
+        int x = size/2;
+        int y = size/2;
+        int[][] m = new int[size][size];
 
-        m[p][p] = 1;
+        m[y][x] = 1;
 
         while (true) {
             for (int i = 0; i < stepsToTake; i++) {
@@ -56,9 +56,9 @@ public class Day3 {
                     case 2: x -= 1; break;
                     case 3: y += 1; break;
                 }
-                m[y+p][x+p] = m[y+p][x+p+1] + m[y+p-1][x+p+1] + m[y+p-1][x+p] + m[y+p-1][x+p-1] + m[y+p][x+p-1] + m[y+p+1][x+p-1] + m[y+p+1][x+p] + m[y+p+1][x+p+1];
-                if (m[y+p][x+p] > square) {
-                    return m[y+p][x+p];
+                m[y][x] = m[y][x+1] + m[y-1][x+1] + m[y-1][x] + m[y-1][x-1] + m[y][x-1] + m[y+1][x-1] + m[y+1][x] + m[y+1][x+1];
+                if (m[y][x] > square) {
+                    return m[y][x];
                 }
             }
             if (direction == 1 || direction == 3) {
