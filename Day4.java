@@ -1,46 +1,37 @@
 import java.io.*;
+import java.nio.file.*;
 import java.util.*;
+import java.util.function.*;
+import java.util.stream.*;
 
 public class Day4 {
     public static void main(String[] args) throws IOException {
-        int numValid1 = 0;
-        int numValid2 = 0;
-        try (BufferedReader in = new BufferedReader(new FileReader("Day4Input.txt"))) {
-            String line;
-            while ((line = in.readLine()) != null) {
-                if (validate(line)) {
-                    numValid1 += 1;
-                }
-                if (validate2(line)) {
-                    numValid2 += 1;
-                }
-            }
-        }
-        System.out.println(numValid1);
-        System.out.println(numValid2);
+        List<String> lines = Files.lines(Paths.get("Day4Input.txt"))
+                .collect(Collectors.toList());
+
+        long partOne = lines.stream()
+                .filter(line -> validate(line, String::hashCode))
+                .count();
+
+        long partTwo = lines.stream()
+                .filter(line -> validate(line, Day4::anagramHash))
+                .count();
+
+        System.out.println(partOne);
+        System.out.println(partTwo);
     }
 
-    private static boolean validate(String passphrase) {
-        Set<String> words = new HashSet<>();
+    private static boolean validate(String passphrase, Function<String, Integer> hashFunction) {
+        Set<Integer> hashes = new HashSet<>();
         for (String word : passphrase.split(" ")) {
-            if (!words.add(word)) {
+            if (!hashes.add(hashFunction.apply(word))) {
                 return false;
             }
         }
         return true;
     }
 
-    private static boolean validate2(String passphrase) {
-        Set<Integer> words = new HashSet<>();
-        for (String word : passphrase.split(" ")) {
-            if (!words.add(hash(word))) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private static int hash(String word) {
+    private static int anagramHash(String word) {
         List<Integer> list = new ArrayList<>(26);
         for (int i = 0; i < 26; i++) list.add(0);
         for (char c : word.toCharArray()) {
