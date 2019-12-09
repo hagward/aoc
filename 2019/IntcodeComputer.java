@@ -1,11 +1,15 @@
 import java.util.Arrays;
 
 public class IntcodeComputer {
+    private static final int MEM_SIZE = 1024;
+
     private static final int MODE_POSITION = 0;
     private static final int MODE_IMMEDIATE = 1;
+    private static final int MODE_RELATIVE = 2;
 
     private final int[] instructions;
     private int ip;
+    private int rp;
 
     public int[] mem;
 
@@ -15,7 +19,9 @@ public class IntcodeComputer {
     }
 
     public void reset() {
-        this.mem = Arrays.copyOf(instructions, instructions.length);
+        mem = Arrays.copyOf(instructions, MEM_SIZE);
+        ip = 0;
+        rp = 0;
     }
 
     public int run() {
@@ -30,16 +36,16 @@ public class IntcodeComputer {
         int curInput = 0;
 
         while (ip < mem.length) {
-            int opCode = mem[ip] % 100;
+            int opcode = mem[ip] % 100;
 
-            if (opCode == 99) return -1;
+            if (opcode == 99) return -1;
 
             int modeX = (mem[ip] / 100) % 10;
             int modeY = (mem[ip] / 1000) % 10;
             int x = getParam(0, modeX);
             int y = getParam(1, modeY);
 
-            switch (opCode) {
+            switch (opcode) {
                 case 1: {
                     mem[mem[ip+3]] = x + y;
                     ip += 4;
@@ -56,8 +62,8 @@ public class IntcodeComputer {
                     ip += 2;
                     break;
                 case 4:
-                    if (returnOnOutput) return mem[mem[ip+1]];
-                    System.out.println(mem[mem[ip+1]]);
+                    if (returnOnOutput) return x;
+                    System.out.println(x);
                     ip += 2;
                     break;
                 case 5: {
@@ -80,6 +86,14 @@ public class IntcodeComputer {
                     ip += 4;
                     break;
                 }
+                case 9: {
+                    rp += x;
+                    ip += 2;
+                    break;
+                }
+                default: {
+                    throw new RuntimeException("Unknown opcode: " + opcode);
+                }
             }
         }
         return -1;
@@ -89,7 +103,29 @@ public class IntcodeComputer {
         int address = ip + i + 1;
         if (address >= mem.length) return -1;
         int value = mem[address];
-        if (mode == MODE_POSITION && value >= mem.length) return -1;
-        return mode == MODE_IMMEDIATE ? value : mem[value];
+
+        switch (mode) {
+            case MODE_POSITION: {
+                if (value >= 0 && value < mem.length) {
+                    return mem[value];
+                }
+                break;
+            }
+            case MODE_IMMEDIATE: {
+                return value;
+            }
+            case MODE_RELATIVE: {
+                int addr = rp + value;
+                if (addr >= 0 && addr < mem.length) {
+                    return mem[addr];
+                }
+                break;
+            }
+            default: {
+                throw new RuntimeException("Unknown mode: " + mode);
+            }
+        }
+
+        return -1;
     }
 }
