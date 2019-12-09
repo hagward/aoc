@@ -19,10 +19,14 @@ public class IntcodeComputer {
     }
 
     public int run() {
-        return run(null);
+        return run(null, false);
     }
 
     public int run(int[] input) {
+        return run(input, false);
+    }
+
+    public int run(int[] input, boolean returnOnOutput) {
         int curInput = 0;
 
         while (ip < mem.length) {
@@ -52,7 +56,10 @@ public class IntcodeComputer {
                     ip += 2;
                     break;
                 case 4:
-                    return mem[mem[ip+1]];
+                    if (returnOnOutput) return mem[mem[ip+1]];
+                    System.out.println(mem[mem[ip+1]]);
+                    ip += 2;
+                    break;
                 case 5: {
                     if (x != 0) ip = y;
                     else ip += 3;
