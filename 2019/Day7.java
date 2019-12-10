@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.function.Consumer;
 
 public class Day7 {
     private static long maxSignal;
@@ -9,31 +10,41 @@ public class Day7 {
         long[] arr1 = new long[]{0,1,2,3,4};
         long[] arr2 = new long[]{5,6,7,8,9};
         long[] instructions = getInput();
+
         computers = new IntcodeComputer[arr1.length];
         for (int i = 0; i < arr1.length; i++) {
             computers[i] = new IntcodeComputer(instructions);
         }
 
         maxSignal = Long.MIN_VALUE;
-        permute1(arr1, 0);
+        permute(arr1, 0, Day7::part1);
         System.out.println(maxSignal);
 
         maxSignal = Long.MIN_VALUE;
-        permute2(arr2, 0);
+        permute(arr2, 0, Day7::part2);
         System.out.println(maxSignal);
     }
 
-    private static void permute1(long[] arr, int k) {
-        for (int i = k; i < arr.length; i++) {
-            swap(arr, i, k);
-            permute1(arr, k+1);
-            swap(arr, k, i);
+    private static void part1(long[] inputs) {
+        long output = 0;
+        for (int i = 0; i < inputs.length; i++) {
+            computers[i].reset();
+            output = computers[i].run(new long[]{inputs[i], output}, true);
         }
-        if (k == arr.length -1) {
-            long output = 0;
-            for (int i = 0; i < arr.length; i++) {
-                output = computers[i].run(new long[]{arr[i], output}, true);
-                computers[i].reset();
+        if (output > maxSignal) {
+            maxSignal = output;
+        }
+    }
+
+    private static void part2(long[] inputs) {
+        long output = 0;
+        for (int i = 0; i < inputs.length; i++) {
+            computers[i].reset();
+            output = computers[i].run(new long[]{inputs[i], output}, true);
+        }
+        while (output != -1) {
+            for (int i = 0; i < inputs.length; i++) {
+                output = computers[i].run(new long[]{output}, true);
             }
             if (output > maxSignal) {
                 maxSignal = output;
@@ -41,26 +52,14 @@ public class Day7 {
         }
     }
 
-    private static void permute2(long[] arr, int k) {
+    private static void permute(long[] arr, int k, Consumer<long[]> consumer) {
         for (int i = k; i < arr.length; i++) {
             swap(arr, i, k);
-            permute2(arr, k+1);
+            permute(arr, k+1, consumer);
             swap(arr, k, i);
         }
         if (k == arr.length -1) {
-            long output = 0;
-            for (int i = 0; i < arr.length; i++) {
-                computers[i].reset();
-                output = computers[i].run(new long[]{arr[i], output}, true);
-            }
-            while (output != -1) {
-                for (int i = 0; i < arr.length; i++) {
-                    output = computers[i].run(new long[]{output}, true);
-                }
-                if (output > maxSignal) {
-                    maxSignal = output;
-                }
-            }
+            consumer.accept(arr);
         }
     }
 
