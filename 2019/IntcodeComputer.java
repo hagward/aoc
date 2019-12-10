@@ -1,7 +1,7 @@
 import java.util.Arrays;
 
 public class IntcodeComputer {
-    private static final int MEM_SIZE = 1024;
+    private static final int MEM_SIZE = 8192;
 
     private static final int MODE_POSITION = 0;
     private static final int MODE_IMMEDIATE = 1;
@@ -42,30 +42,36 @@ public class IntcodeComputer {
 
             int modeX = (int) (mem[ip] / 100) % 10;
             int modeY = (int) (mem[ip] / 1000) % 10;
+            int modeZ = (int) (mem[ip] / 10000) % 10;
             long x = getParam(0, modeX);
             long y = getParam(1, modeY);
 
             switch (opcode) {
                 case 1: {
-                    mem[(int) mem[ip+3]] = x + y;
+                    int addr = (int) mem[ip+3] + (modeZ == MODE_RELATIVE ? rp : 0);
+                    mem[addr] = x + y;
                     ip += 4;
                     break;
                 }
                 case 2: {
-                    mem[(int) mem[ip+3]] = x * y;
+                    int addr = (int) mem[ip+3] + (modeZ == MODE_RELATIVE ? rp : 0);
+                    mem[addr] = x * y;
                     ip += 4;
                     break;
                 }
-                case 3:
-                    mem[(int) x] = input[curInput];
+                case 3: {
+                    int addr = (int) mem[ip+1] + (modeX == MODE_RELATIVE ? rp : 0);
+                    mem[addr] = input[curInput];
                     if (curInput < input.length - 1) curInput++;
                     ip += 2;
                     break;
-                case 4:
+                }
+                case 4: {
+                    ip += 2;
                     if (returnOnOutput) return x;
                     System.out.println(x);
-                    ip += 2;
                     break;
+                }
                 case 5: {
                     if (x != 0) ip = (int) y;
                     else ip += 3;
@@ -77,12 +83,14 @@ public class IntcodeComputer {
                     break;
                 }
                 case 7: {
-                    mem[(int) mem[ip+3]] = x < y ? 1 : 0;
+                    int addr = (int) mem[ip+3] + (modeZ == MODE_RELATIVE ? rp : 0);
+                    mem[addr] = x < y ? 1 : 0;
                     ip += 4;
                     break;
                 }
                 case 8: {
-                    mem[(int) mem[ip+3]] = x == y ? 1 : 0;
+                    int addr = (int) mem[ip+3] + (modeZ == MODE_RELATIVE ? rp : 0);
+                    mem[addr] = x == y ? 1 : 0;
                     ip += 4;
                     break;
                 }
