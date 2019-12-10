@@ -7,13 +7,13 @@ public class IntcodeComputer {
     private static final int MODE_IMMEDIATE = 1;
     private static final int MODE_RELATIVE = 2;
 
-    private final int[] instructions;
+    private final long[] instructions;
     private int ip;
     private int rp;
 
-    public int[] mem;
+    public long[] mem;
 
-    public IntcodeComputer(int[] instructions) {
+    public IntcodeComputer(long[] instructions) {
         this.instructions = instructions;
         reset();
     }
@@ -24,40 +24,40 @@ public class IntcodeComputer {
         rp = 0;
     }
 
-    public int run() {
+    public long run() {
         return run(null, false);
     }
 
-    public int run(int[] input) {
+    public long run(long[] input) {
         return run(input, false);
     }
 
-    public int run(int[] input, boolean returnOnOutput) {
+    public long run(long[] input, boolean returnOnOutput) {
         int curInput = 0;
 
         while (ip < mem.length) {
-            int opcode = mem[ip] % 100;
+            int opcode = (int) mem[ip] % 100;
 
             if (opcode == 99) return -1;
 
-            int modeX = (mem[ip] / 100) % 10;
-            int modeY = (mem[ip] / 1000) % 10;
-            int x = getParam(0, modeX);
-            int y = getParam(1, modeY);
+            int modeX = (int) (mem[ip] / 100) % 10;
+            int modeY = (int) (mem[ip] / 1000) % 10;
+            long x = getParam(0, modeX);
+            long y = getParam(1, modeY);
 
             switch (opcode) {
                 case 1: {
-                    mem[mem[ip+3]] = x + y;
+                    mem[(int) mem[ip+3]] = x + y;
                     ip += 4;
                     break;
                 }
                 case 2: {
-                    mem[mem[ip+3]] = x * y;
+                    mem[(int) mem[ip+3]] = x * y;
                     ip += 4;
                     break;
                 }
                 case 3:
-                    mem[mem[ip+1]] = input[curInput];
+                    mem[(int) x] = input[curInput];
                     if (curInput < input.length - 1) curInput++;
                     ip += 2;
                     break;
@@ -67,22 +67,22 @@ public class IntcodeComputer {
                     ip += 2;
                     break;
                 case 5: {
-                    if (x != 0) ip = y;
+                    if (x != 0) ip = (int) y;
                     else ip += 3;
                     break;
                 }
                 case 6: {
-                    if (x == 0) ip = y;
+                    if (x == 0) ip = (int) y;
                     else ip += 3;
                     break;
                 }
                 case 7: {
-                    mem[mem[ip+3]] = x < y ? 1 : 0;
+                    mem[(int) mem[ip+3]] = x < y ? 1 : 0;
                     ip += 4;
                     break;
                 }
                 case 8: {
-                    mem[mem[ip+3]] = x == y ? 1 : 0;
+                    mem[(int) mem[ip+3]] = x == y ? 1 : 0;
                     ip += 4;
                     break;
                 }
@@ -99,15 +99,15 @@ public class IntcodeComputer {
         return -1;
     }
 
-    private int getParam(int i, int mode) {
+    private long getParam(int i, int mode) {
         int address = ip + i + 1;
         if (address >= mem.length) return -1;
-        int value = mem[address];
+        long value = mem[address];
 
         switch (mode) {
             case MODE_POSITION: {
                 if (value >= 0 && value < mem.length) {
-                    return mem[value];
+                    return mem[(int) value];
                 }
                 break;
             }
@@ -115,7 +115,7 @@ public class IntcodeComputer {
                 return value;
             }
             case MODE_RELATIVE: {
-                int addr = rp + value;
+                int addr = (int) (rp + value);
                 if (addr >= 0 && addr < mem.length) {
                     return mem[addr];
                 }
