@@ -1,10 +1,9 @@
 import java.io.IOException;
-import java.nio.file.*;
 
 public class Day11 {
     private static final int hullSize = 1000;
     public static void main(String[] args) throws IOException {
-        IntcodeComputer computer = new IntcodeComputer(getInput());
+        IntcodeComputer computer = new IntcodeComputer(Util.getCommaSeparatedInput(11));
 
         int[][] hull = new int[hullSize][hullSize];
         boolean[][] painted = new boolean[hullSize][hullSize];
@@ -57,15 +56,6 @@ public class Day11 {
             for (boolean col : row)
                 if (col) numPainted++;
         return numPainted;
-    }
-
-    private static long[] getInput() throws IOException {
-        String[] split = new String(Files.readAllBytes(Paths.get("inputs/day11.txt")), "UTF-8").split(",");
-        long[] result = new long[split.length];
-        for (int i = 0; i < split.length; i++) {
-            result[i] = Long.parseLong(split[i].trim());
-        }
-        return result;
     }
 
     private static class Robot {

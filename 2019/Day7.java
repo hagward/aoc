@@ -1,5 +1,4 @@
 import java.io.IOException;
-import java.nio.file.*;
 import java.util.function.Consumer;
 
 public class Day7 {
@@ -9,7 +8,7 @@ public class Day7 {
     public static void main(String[] args) throws IOException {
         long[] arr1 = new long[]{0,1,2,3,4};
         long[] arr2 = new long[]{5,6,7,8,9};
-        long[] instructions = getInput();
+        long[] instructions = Util.getCommaSeparatedInput(7);
 
         computers = new IntcodeComputer[arr1.length];
         for (int i = 0; i < arr1.length; i++) {
@@ -67,14 +66,5 @@ public class Day7 {
         long tmp = arr[i];
         arr[i] = arr[j];
         arr[j] = tmp;
-    }
-
-    private static long[] getInput() throws IOException {
-        String[] split = new String(Files.readAllBytes(Paths.get("inputs/day7.txt")), "UTF-8").split(",");
-        long[] result = new long[split.length];
-        for (int i = 0; i < split.length; i++) {
-            result[i] = Long.parseLong(split[i].trim());
-        }
-        return result;
     }
 }
