@@ -25,18 +25,21 @@ public class Day15 {
         var x = 21;
         var y = 21;
 
-        for (var i = 0; i < dist.length; i++)
-            for (var j = 0; j < dist[i].length; j++)
-                dist[i][j] = Integer.MAX_VALUE;
-
+        reset(dist);
         space[y][x] = SPACE_NOWALL;
 
         // Explore the space.
         dfs(space, x, y-1, DIR_NORTH, computer);
         print(space);
 
-        // Find the shortest path.
-        bfs(space, dist, x, y);
+        // Find the shortest path to the oxygen.
+        int[] node = bfs(space, dist, x, y, SPACE_OXYGEN);
+        System.out.printf("Shortest path to oxygen: %d%n", dist[node[1]][node[0]]);
+
+        reset(dist);
+
+        node = bfs(space, dist, node[0], node[1], -1);
+        System.out.printf("Minutes until oxygen filled: %d%n", dist[node[1]][node[0]]);
     }
 
     private static void dfs(int[][] space, int x, int y, int direction, IntcodeComputer computer) {
@@ -65,7 +68,7 @@ public class Day15 {
         computer.run(new long[]{OPPOSITE_DIR[direction]}, true);
     }
 
-    private static void bfs(int[][] space, int[][] dist, int startX, int startY) {
+    private static int[] bfs(int[][] space, int[][] dist, int startX, int startY, int searchValue) {
         var q = new LinkedList<int[]>();
         q.add(new int[]{startX, startY});
         dist[startY][startX] = 0;
@@ -75,11 +78,7 @@ public class Day15 {
             int x = node[0];
             int y = node[1];
 
-            if (space[y][x] == SPACE_OXYGEN) {
-                System.out.printf("Found oxygen at: (%d,%d)%n", x, y);
-                System.out.printf("Shortest path to oxygen: %d%n", dist[y][x]);
-                return;
-            }
+            if (space[y][x] == searchValue) return new int[]{x, y};
 
             if (x > 0 && dist[y][x-1] == Integer.MAX_VALUE && space[y][x-1] != SPACE_WALL) {
                 dist[y][x-1] = dist[y][x] + 1;
@@ -97,7 +96,19 @@ public class Day15 {
                 dist[y+1][x] = dist[y][x] + 1;
                 q.add(new int[]{x, y+1});
             }
+
+            // Return the last visited node in case 'searchValue' wasn't found.
+            if (q.isEmpty()) return new int[]{x, y};
         }
+
+        // Should not happen.
+        return new int[]{-1, -1};
+    }
+
+    private static void reset(int[][] dist) {
+        for (var i = 0; i < dist.length; i++)
+            for (var j = 0; j < dist[i].length; j++)
+                dist[i][j] = Integer.MAX_VALUE;
     }
 
     private static void print(int[][] space) {
