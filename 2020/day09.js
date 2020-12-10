@@ -1,10 +1,3 @@
-const fs = require("fs");
-const numbers = fs
-  .readFileSync("day09.txt", "utf8")
-  .trim()
-  .split("\n")
-  .map(Number);
-
 const findInvalidNumber = (numbers, preambleSize) => {
   const preamble = numbers.slice(0, preambleSize);
   const preambleSet = new Set(preamble);
@@ -39,6 +32,13 @@ const findEncryptionWeakness = (numbers, invalidNumber) => {
 
   return -1;
 };
+
+const fs = require("fs");
+const numbers = fs
+  .readFileSync("day09.txt", "utf8")
+  .trim()
+  .split("\n")
+  .map(Number);
 
 const invalidNumber = findInvalidNumber(numbers, 25);
 const weakness = findEncryptionWeakness(numbers, invalidNumber);
