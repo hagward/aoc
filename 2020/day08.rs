@@ -44,7 +44,7 @@ impl Computer {
 }
 
 fn main() {
-    let input = fs::read_to_string("day08.txt").unwrap();
+    let input = fs::read_to_string("inputs/day08.txt").unwrap();
     let mut instructions: Vec<Instruction> = Vec::new();
     for line in input.trim().split("\n") {
         let tokens: Vec<&str> = line.split(" ").collect();
