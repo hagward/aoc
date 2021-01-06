@@ -14,7 +14,7 @@ const groupAnswers = (s) => s.split("").filter((c) => c !== "\n");
 const sum = (arr, f) => arr.reduce((p, v) => p + f(v), 0);
 
 const fs = require("fs");
-const input = fs.readFileSync("day06.txt", "utf8").trim();
+const input = fs.readFileSync("inputs/day06.txt", "utf8").trim();
 const groups = input.split("\n\n");
 
 console.log(sum(groups, numAnswersPart1));

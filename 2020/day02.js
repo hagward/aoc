@@ -15,6 +15,6 @@ const parseLine = (line) => {
 };
 
 const fs = require("fs");
-const data = fs.readFileSync("day02.txt", "utf8").trim().split("\n");
+const data = fs.readFileSync("inputs/day02.txt", "utf8").trim().split("\n");
 console.log(data.filter(isValidPart1).length);
 console.log(data.filter(isValidPart2).length);

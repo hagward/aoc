@@ -28,7 +28,10 @@ const binarySearch = (n, v) => {
 };
 
 const fs = require("fs");
-const boardingPasses = fs.readFileSync("day05.txt", "utf8").trim().split("\n");
+const boardingPasses = fs
+  .readFileSync("inputs/day05.txt", "utf8")
+  .trim()
+  .split("\n");
 const seatIds = boardingPasses.map(seatId).sort();
 
 const maxSeatId = seatIds.reduce((p, v) => (v > p ? v : p));

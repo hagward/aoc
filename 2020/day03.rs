@@ -1,7 +1,7 @@
 use std::fs;
 
 fn main() {
-    let input = fs::read_to_string("day03.txt").unwrap();
+    let input = fs::read_to_string("inputs/day03.txt").unwrap();
     let lines: Vec<&str> = input.trim().split("\n").collect();
 
     let trees11 = check_slope(&lines, 1, 1);

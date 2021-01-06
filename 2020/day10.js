@@ -1,6 +1,6 @@
 const fs = require("fs");
 const adapters = fs
-  .readFileSync("day10.txt", "utf8")
+  .readFileSync("inputs/day10.txt", "utf8")
   .trim()
   .split("\n")
   .map(Number)

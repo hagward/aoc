@@ -35,7 +35,7 @@ const findEncryptionWeakness = (numbers, invalidNumber) => {
 
 const fs = require("fs");
 const numbers = fs
-  .readFileSync("day09.txt", "utf8")
+  .readFileSync("inputs/day09.txt", "utf8")
   .trim()
   .split("\n")
   .map(Number);

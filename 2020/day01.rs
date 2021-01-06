@@ -4,7 +4,7 @@ use std::io::BufReader;
 use std::path::Path;
 
 fn main() {
-    let input: Vec<i32> = lines_from_file("day01.txt")
+    let input: Vec<i32> = lines_from_file("inputs/day01.txt")
         .iter()
         .map(|s| s.parse().unwrap())
         .collect();

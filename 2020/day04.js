@@ -37,6 +37,9 @@ const isValid = (passport, checkRules = false) => {
 };
 
 const fs = require("fs");
-const passports = fs.readFileSync("day04.txt", "utf8").trim().split("\n\n");
+const passports = fs
+  .readFileSync("inputs/day04.txt", "utf8")
+  .trim()
+  .split("\n\n");
 console.log(passports.filter((p) => isValid(p)).length);
 console.log(passports.filter((p) => isValid(p, true)).length);

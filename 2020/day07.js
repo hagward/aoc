@@ -36,7 +36,7 @@ const countChildren = (bag, children) => {
 };
 
 const fs = require("fs");
-const input = fs.readFileSync("day07.txt", "utf8").trim();
+const input = fs.readFileSync("inputs/day07.txt", "utf8").trim();
 const [parents, children] = parse(input);
 console.log(countParents("shiny gold", parents, new Set()) - 1);
 console.log(countChildren("shiny gold", children) - 1);
