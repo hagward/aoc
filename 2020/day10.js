@@ -7,12 +7,16 @@ const adapters = fs
   .sort((a, b) => a - b);
 
 const diffs = [0, 1, 0, 1];
-
 for (let i = 1; i < adapters.length; i++) {
   const diff = adapters[i] - adapters[i - 1];
-  // console.log(`${adapters[i]}-${adapters[i - 1]}=${diff}`);
   diffs[diff]++;
 }
 
-console.log(diffs);
+const dp = { 0: 1 };
+for (const x of adapters) {
+  const ans = (dp[x - 1] || 0) + (dp[x - 2] || 0) + (dp[x - 3] || 0);
+  dp[x] = ans;
+}
+
 console.log(diffs[1] * diffs[3]);
+console.log(dp[adapters[adapters.length - 1]]);
