@@ -7,12 +7,7 @@ fn part_one(timestamp: u64, timetable: &str) -> u64 {
         .filter(|&id_str| id_str != "x")
         .map(|id_str| {
             let id: u64 = id_str.parse().unwrap();
-            let rest = timestamp % id;
-            if rest == 0 {
-                (id, 0)
-            } else {
-                (id, id - rest)
-            }
+            (id, id - (timestamp % id))
         })
         .min_by_key(|&(_, wait)| wait)
         .map(|(id, wait)| id * wait)
