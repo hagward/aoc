@@ -14,9 +14,40 @@ fn part_one(timestamp: u64, timetable: &str) -> u64 {
         .unwrap()
 }
 
+fn part_two(timetable: &str) -> u64 {
+    let buses: Vec<(u64, u64)> = timetable
+        .split(",")
+        .enumerate()
+        .filter(|&(_, id_str)| id_str != "x")
+        .map(|(i, id_str)| (i as u64, id_str.parse::<u64>().unwrap()))
+        .collect();
+
+    let (mut t, mut step) = buses[0];
+    for (delta, period) in buses.iter().skip(1) {
+        while (t + delta) % period != 0 {
+            t += step;
+        }
+        step = lcm(step, *period);
+    }
+
+    t
+}
+
+fn lcm(a: u64, b: u64) -> u64 {
+    a * b / gcd(a, b)
+}
+
+fn gcd(a: u64, b: u64) -> u64 {
+    if b == 0 {
+        a
+    } else {
+        gcd(b, a % b)
+    }
+}
+
 fn main() {
-    let result = part_one(TIMESTAMP, TIMETABLE);
-    println!("{}", result);
+    println!("{}", part_one(TIMESTAMP, TIMETABLE));
+    println!("{}", part_two(TIMETABLE));
 }
 
 #[cfg(test)]
@@ -27,6 +58,13 @@ mod tests {
     fn test_part_one() -> Result<(), String> {
         let result = part_one(939, "7,13,x,x,59,x,31,19");
         assert_eq!(result, 295);
+        Ok(())
+    }
+
+    #[test]
+    fn test_part_two() -> Result<(), String> {
+        let result = part_two("7,13,x,x,59,x,31,19");
+        assert_eq!(result, 1068781);
         Ok(())
     }
 }
