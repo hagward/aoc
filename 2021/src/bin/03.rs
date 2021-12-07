@@ -52,7 +52,10 @@ fn bit_at(n: u32, pos: usize) -> u32 {
 }
 
 fn main() {
-    let input: Vec<u32> = INPUT.split_whitespace().map(|x| u32::from_str_radix(x, 2).unwrap()).collect();
+    let input: Vec<u32> = INPUT
+        .split_whitespace()
+        .map(|x| u32::from_str_radix(x, 2).unwrap())
+        .collect();
     println!("Part one: {}", part_one(&input));
     println!("Part two: {}", part_two(&input));
 }

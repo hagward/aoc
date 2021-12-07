@@ -40,7 +40,10 @@ fn num_overlap(lines: impl Iterator<Item = Line>) -> usize {
 
 fn main() {
     let all_lines: Vec<Line> = INPUT.lines().map(|line| Line::new(line)).collect();
-    let horizontal_or_vertical = all_lines.iter().copied().filter(|line| line.from.0 == line.to.0 || line.from.1 == line.to.1);
+    let horizontal_or_vertical = all_lines
+        .iter()
+        .copied()
+        .filter(|line| line.from.0 == line.to.0 || line.from.1 == line.to.1);
     println!("Part one: {}", num_overlap(horizontal_or_vertical));
     println!("Part two: {}", num_overlap(all_lines.iter().copied()));
 }

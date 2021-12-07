@@ -27,7 +27,8 @@ fn part_two(input: &[(&str, i32)]) -> i32 {
 }
 
 fn main() {
-    let input: Vec<(&str, i32)> = INPUT.split_whitespace()
+    let input: Vec<(&str, i32)> = INPUT
+        .split_whitespace()
         .tuples()
         .map(|(command, n)| (command, n.parse().unwrap()))
         .collect();

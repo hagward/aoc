@@ -89,7 +89,11 @@ fn part_two(numbers: &[usize], mut boards: Vec<Board>) -> usize {
 fn main() {
     let chunks: Vec<&str> = INPUT.split("\n\n").collect();
     let numbers: Vec<usize> = chunks[0].split(',').map(|n| n.parse().unwrap()).collect();
-    let boards: Vec<Board> = chunks.iter().skip(1).map(|chunk| parse_board(chunk)).collect();
+    let boards: Vec<Board> = chunks
+        .iter()
+        .skip(1)
+        .map(|chunk| parse_board(chunk))
+        .collect();
     println!("Part one: {}", part_one(&numbers, boards.clone()));
     println!("Part two: {}", part_two(&numbers, boards.clone()));
 }

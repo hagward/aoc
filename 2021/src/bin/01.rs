@@ -15,7 +15,10 @@ fn part_two(depths: &[u32]) -> usize {
 }
 
 fn main() {
-    let depths: Vec<u32> = INPUT.split_whitespace().map(|x| x.parse().unwrap()).collect();
+    let depths: Vec<u32> = INPUT
+        .split_whitespace()
+        .map(|x| x.parse().unwrap())
+        .collect();
     println!("Part one: {}", part_one(&depths));
     println!("Part two: {}", part_two(&depths));
 }
