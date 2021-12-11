@@ -13,10 +13,12 @@ fn part_one(input: &Vec<&str>) -> u64 {
                 '[' => stack.push(']'),
                 '{' => stack.push('}'),
                 '<' => stack.push('>'),
-                ')' | ']' | '}' | '>' => if Some(c) != stack.pop() {
-                    sum += points[&c];
-                    break;
-                },
+                ')' | ']' | '}' | '>' => {
+                    if Some(c) != stack.pop() {
+                        sum += points[&c];
+                        break;
+                    }
+                }
                 _ => unreachable!(),
             }
         }
@@ -36,10 +38,12 @@ fn part_two(input: &Vec<&str>) -> u64 {
                 '[' => stack.push(']'),
                 '{' => stack.push('}'),
                 '<' => stack.push('>'),
-                ')' | ']' | '}' | '>' => if Some(c) != stack.pop() {
-                    corrupted = true;
-                    break;
-                },
+                ')' | ']' | '}' | '>' => {
+                    if Some(c) != stack.pop() {
+                        corrupted = true;
+                        break;
+                    }
+                }
                 _ => unreachable!(),
             }
         }
@@ -52,7 +56,7 @@ fn part_two(input: &Vec<&str>) -> u64 {
         }
     }
     scores.sort();
-    scores[scores.len()/2]
+    scores[scores.len() / 2]
 }
 
 fn main() {
