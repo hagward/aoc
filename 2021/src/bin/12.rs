@@ -16,11 +16,11 @@ fn dfs<'a>(
     let is_small_cave = node.chars().next().unwrap().is_lowercase();
     if !is_small_cave || visited.insert(node) {
         for neighbor in &nodes[node] {
-            num_paths += dfs(&neighbor, nodes, visited.clone(), is_twice, is_part2);
+            num_paths += dfs(neighbor, nodes, visited.clone(), is_twice, is_part2);
         }
     } else if is_part2 && !is_twice && node != "start" {
         for neighbor in &nodes[node] {
-            num_paths += dfs(&neighbor, nodes, visited.clone(), true, true);
+            num_paths += dfs(neighbor, nodes, visited.clone(), true, true);
         }
     }
     num_paths
@@ -30,8 +30,8 @@ fn main() {
     let mut nodes: HashMap<&str, Vec<&str>> = HashMap::new();
     INPUT.lines().for_each(|line| {
         let (a, b) = line.split_once('-').unwrap();
-        nodes.entry(a).or_insert(Vec::new()).push(b);
-        nodes.entry(b).or_insert(Vec::new()).push(a);
+        nodes.entry(a).or_insert_with(Vec::new).push(b);
+        nodes.entry(b).or_insert_with(Vec::new).push(a);
     });
     let part1 = dfs("start", &nodes, HashSet::new(), false, false);
     let part2 = dfs("start", &nodes, HashSet::new(), false, true);

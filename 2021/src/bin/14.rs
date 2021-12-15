@@ -37,6 +37,6 @@ fn main() {
             ((&from[0..1], &from[1..2]), to)
         })
         .collect();
-    println!("Part one: {}", solve(&template, &rules, 10));
-    println!("Part two: {}", solve(&template, &rules, 40));
+    println!("Part one: {}", solve(template, &rules, 10));
+    println!("Part two: {}", solve(template, &rules, 40));
 }

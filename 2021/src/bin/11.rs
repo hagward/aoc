@@ -33,11 +33,25 @@ fn step(input: &mut Vec<Vec<u32>>) -> usize {
     flashed.len()
 }
 
-fn maybe_flash(flashed: &mut HashSet<(usize, usize)>, input: &mut Vec<Vec<u32>>, x: usize, y: usize) {
+fn maybe_flash(
+    flashed: &mut HashSet<(usize, usize)>,
+    input: &mut Vec<Vec<u32>>,
+    x: usize,
+    y: usize,
+) {
     if input[y][x] < 10 || !flashed.insert((x, y)) {
         return;
     }
-    let d = [(0, -1), (1, -1), (1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1)];
+    let d = [
+        (0, -1),
+        (1, -1),
+        (1, 0),
+        (1, 1),
+        (0, 1),
+        (-1, 1),
+        (-1, 0),
+        (-1, -1),
+    ];
     for (dx, dy) in d {
         let xx = dx + x as i32;
         let yy = dy + y as i32;
@@ -57,5 +71,5 @@ fn main() {
         .map(|line| line.chars().map(|c| c.to_digit(10).unwrap()).collect())
         .collect();
     println!("Part one: {}", part_one(input.clone()));
-    println!("Part two: {}", part_two(input.clone()));
+    println!("Part two: {}", part_two(input));
 }
