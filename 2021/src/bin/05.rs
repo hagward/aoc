@@ -15,7 +15,7 @@ fn parse_point(s: &str) -> (i32, i32) {
 
 impl Line {
     fn new(s: &str) -> Self {
-        let mut points = s.split(" -> ").map(|point| parse_point(point));
+        let mut points = s.split(" -> ").map(parse_point);
         Self {
             from: points.next().unwrap(),
             to: points.next().unwrap(),
@@ -39,7 +39,7 @@ fn num_overlap(lines: impl Iterator<Item = Line>) -> usize {
 }
 
 fn main() {
-    let all_lines: Vec<Line> = INPUT.lines().map(|line| Line::new(line)).collect();
+    let all_lines: Vec<Line> = INPUT.lines().map(Line::new).collect();
     let horizontal_or_vertical = all_lines
         .iter()
         .copied()
