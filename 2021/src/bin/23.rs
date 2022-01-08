@@ -88,15 +88,16 @@ impl State {
     }
 
     fn is_goal(&self) -> bool {
-        let b = &self.board;
-        b[2][3] == 'A'
-            && b[3][3] == 'A'
-            && b[2][5] == 'B'
-            && b[3][5] == 'B'
-            && b[2][7] == 'C'
-            && b[3][7] == 'C'
-            && b[2][9] == 'D'
-            && b[3][9] == 'D'
+        for y in 2..self.board.len() - 1 {
+            for x in 0..4 {
+                let c = (b'A' + x as u8) as char;
+                let x = x * 2 + 3;
+                if self.board[y][x] != c {
+                    return false;
+                }
+            }
+        }
+        true
     }
 }
 
