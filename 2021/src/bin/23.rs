@@ -46,28 +46,7 @@ impl State {
         while !queue.is_empty() {
             let (x, y, steps) = queue.pop_front().unwrap();
 
-            if steps > 0
-                && (x != 3 || y != 1)
-                && (x != 5 || y != 1)
-                && (x != 7 || y != 1)
-                && (x != 9 || y != 1)
-                && (x != 3
-                    || y != 2
-                    || amph == 'A' && (self.board[3][3] == amph)
-                    || self.board[3][3] == '.')
-                && (x != 5
-                    || y != 2
-                    || amph == 'B' && (self.board[3][5] == amph)
-                    || self.board[3][5] == '.')
-                && (x != 7
-                    || y != 2
-                    || amph == 'C' && (self.board[3][7] == amph)
-                    || self.board[3][7] == '.')
-                && (x != 9
-                    || y != 2
-                    || amph == 'D' && (self.board[3][9] == amph)
-                    || self.board[3][9] == '.')
-            {
+            if steps > 0 && self.is_valid_move(amph, x, y) {
                 let cost = 10_usize.pow(amph as u32 - 'A' as u32) * steps;
                 let mut new_state = self.clone();
                 new_state.board[ys][xs] = '.';
@@ -85,6 +64,28 @@ impl State {
             }
         }
         moves
+    }
+
+    fn is_valid_move(&self, amph: char, x: usize, y: usize) -> bool {
+        // Cannot stop in front of a corridor.
+        if y == 1 && x > 2 && x < self.board[y].len() - 2 && x % 2 == 1 {
+            return false;
+        }
+
+        if y > 1 {
+            // Cannot enter another amphipod's corridor.
+            if amph as u8 - b'A' != ((x - 3) / 2) as u8 {
+                return false;
+            }
+
+            // Cannot enter a corridor where there are amphipods that want to get out.
+            let c = self.board[y + 1][x];
+            if c != amph && c != '#' {
+                return false;
+            }
+        }
+
+        true
     }
 
     fn is_goal(&self) -> bool {
