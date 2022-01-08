@@ -10,14 +10,19 @@ struct State {
 }
 
 impl State {
-    fn key(&self) -> String {
-        let mut result = String::new();
-        for row in self.board.iter() {
-            for &col in row {
-                result.push(col);
+    fn key(&self) -> u128 {
+        let mut key: u128 = 0;
+        for y in 1..self.board.len() - 1 {
+            for x in 1..self.board[y].len() - 1 {
+                let c = self.board[y][x];
+                if c == '.' {
+                    key = (key << 3) | 7;
+                } else if c.is_ascii_alphabetic() {
+                    key = (key << 3) | (c as u8 - b'A') as u128;
+                }
             }
         }
-        result
+        key
     }
 
     fn all_moves(&self) -> Vec<State> {
@@ -108,7 +113,7 @@ impl PartialOrd for State {
 }
 
 fn shortest_path(start_state: State) -> Option<usize> {
-    let mut dist: HashMap<String, usize> = HashMap::from([(start_state.key(), 0)]);
+    let mut dist: HashMap<u128, usize> = HashMap::from([(start_state.key(), 0)]);
     let mut heap = BinaryHeap::from([start_state]);
 
     while let Some(state) = heap.pop() {
