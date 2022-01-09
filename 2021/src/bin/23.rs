@@ -1,7 +1,8 @@
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap, VecDeque};
 
-static INPUT: &str = "#############\n#...........#\n###B#B#D#D###\n  #C#A#A#C#  \n  #########  ";
+static INPUT_P1: &str = "#############\n#...........#\n###B#B#D#D###\n  #C#A#A#C#  \n  #########  ";
+static INPUT_P2: &str = "#############\n#...........#\n###B#B#D#D###\n  #D#C#B#A#  \n  #D#B#A#C#  \n  #C#A#A#C#  \n  #########  ";
 
 #[derive(Clone, Eq, PartialEq)]
 struct State {
@@ -40,13 +41,18 @@ impl State {
     fn moves(&self, xs: usize, ys: usize) -> Vec<State> {
         let mut moves = Vec::new();
         let amph = self.board[ys][xs];
+
+        if self.is_amph_settled(xs, ys) {
+            return Vec::new();
+        }
+
         let mut queue = VecDeque::from([(xs, ys, 0_usize)]);
         let mut visited = vec![vec![false; self.board[0].len()]; self.board.len()];
         visited[ys][xs] = true;
         while !queue.is_empty() {
             let (x, y, steps) = queue.pop_front().unwrap();
 
-            if steps > 0 && self.is_valid_move(amph, x, y) {
+            if steps > 0 && self.is_valid_move(amph, ys, x, y) {
                 let cost = 10_usize.pow(amph as u32 - 'A' as u32) * steps;
                 let mut new_state = self.clone();
                 new_state.board[ys][xs] = '.';
@@ -66,7 +72,32 @@ impl State {
         moves
     }
 
-    fn is_valid_move(&self, amph: char, x: usize, y: usize) -> bool {
+    fn is_amph_settled(&self, x: usize, y: usize) -> bool {
+        if y == 1 {
+            return false;
+        }
+
+        // Wrong corridor.
+        let amph = self.board[y][x];
+        if amph as u8 - b'A' != ((x - 3) / 2) as u8 {
+            return false;
+        }
+
+        // Another amph wants to get out.
+        let next_amph = self.board[y + 1][x];
+        if amph != next_amph && next_amph != '#' {
+            return false;
+        }
+
+        true
+    }
+
+    fn is_valid_move(&self, amph: char, ys: usize, x: usize, y: usize) -> bool {
+        // Cannot move from hallway to another place in hallway.
+        if ys == 1 && y == 1 {
+            return false;
+        }
+
         // Cannot stop in front of a corridor.
         if y == 1 && x > 2 && x < self.board[y].len() - 2 && x % 2 == 1 {
             return false;
@@ -114,7 +145,9 @@ impl PartialOrd for State {
     }
 }
 
-fn shortest_path(start_state: State) -> Option<usize> {
+fn solve(input: &str) -> Option<usize> {
+    let board: Vec<Vec<char>> = input.lines().map(|line| line.chars().collect()).collect();
+    let start_state = State { board, cost: 0 };
     let mut dist: HashMap<u128, usize> = HashMap::from([(start_state.key(), 0)]);
     let mut heap = BinaryHeap::from([start_state]);
 
@@ -142,7 +175,6 @@ fn shortest_path(start_state: State) -> Option<usize> {
 }
 
 fn main() {
-    let board: Vec<Vec<char>> = INPUT.lines().map(|line| line.chars().collect()).collect();
-    let state = State { board, cost: 0 };
-    println!("Part one: {}", shortest_path(state).unwrap());
+    println!("Part one: {}", solve(INPUT_P1).unwrap());
+    println!("Part two: {}", solve(INPUT_P2).unwrap());
 }
