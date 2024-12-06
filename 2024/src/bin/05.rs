@@ -11,23 +11,42 @@ fn main() {
         let (l, r) = rule.split_once("|").unwrap();
         map.entry(l).or_insert_with(|| HashSet::new()).insert(r);
     });
-    let is_correct = |update: &[&str]| {
+    let error_indexes = |update: &[&str]| -> Option<(usize, usize)> {
         for i in 0..update.len() - 1 {
             for j in i + 1..update.len() {
-                if map.contains_key(update[j]) && map.get(update[j]).unwrap().contains(update[i]) {
-                    return false;
+                if map
+                    .get(update[j])
+                    .map(|set| set.contains(update[i]))
+                    .unwrap_or_default()
+                {
+                    return Some((i, j));
                 }
             }
         }
-        true
+        None
     };
-    let mut sum = 0;
+    let mut sum_part1 = 0;
     updates.lines().for_each(|update| {
         let update: Vec<&str> = update.split(",").collect();
-        if is_correct(&update) {
+        if error_indexes(&update).is_none() {
             let mid: usize = update[update.len() / 2].parse().unwrap();
-            sum += mid;
+            sum_part1 += mid;
         }
     });
-    println!("{}", sum);
+    println!("{}", sum_part1);
+
+    let mut sum_part2 = 0;
+    updates.lines().for_each(|update| {
+        let mut update: Vec<&str> = update.split(",").collect();
+        let mut had_error = false;
+        while let Some((i, j)) = error_indexes(&update) {
+            (update[i], update[j]) = (update[j], update[i]);
+            had_error = true;
+        }
+        if had_error {
+            let mid: usize = update[update.len() / 2].parse().unwrap();
+            sum_part2 += mid;
+        }
+    });
+    println!("{}", sum_part2);
 }
