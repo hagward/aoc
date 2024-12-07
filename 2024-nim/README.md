@@ -1,11 +1,11 @@
 Run with example input:
 
 ```
-make example day=01
+make day=01 example
 ```
 
 Run with full input:
 
 ```
-make full day=01
+make day=01
 ```
