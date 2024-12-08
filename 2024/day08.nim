@@ -2,46 +2,9 @@ import std/[sets, sequtils, strutils, tables]
 
 let grid = readAll(stdin).strip.splitLines.mapIt(it.toSeq)
 
-type Pos = tuple[x: int, y: int]
+proc inBounds(x, y: int): bool = x >= 0 and x < grid[0].len and y >= 0 and y < grid.len
 
-proc inBounds(pos: Pos): bool =
-    return pos.x >= 0 and pos.x < grid[0].len and
-           pos.y >= 0 and pos.y < grid.len
-
-proc getTwoAntinodes(a, b: Pos): seq[Pos] =
-    let
-        dx = abs(a.x - b.x)
-        dy = abs(a.y - b.y)
-        k = (a.y - b.y) / (a.x - b.x)
-    if k >= 0:
-        return @[(x: min(a.x, b.x) - dx, y: min(a.y, b.y) - dy),
-                 (x: max(a.x, b.x) + dx, y: max(a.y, b.y) + dy)].filter(inBounds)
-    else:
-        return @[(x: min(a.x, b.x) - dx, y: max(a.y, b.y) + dy),
-                 (x: max(a.x, b.x) + dx, y: min(a.y, b.y) - dy)].filter(inBounds)
-
-proc getAllAntinodes(a, b: Pos): seq[Pos] =
-    let
-        dx = abs(a.x - b.x)
-        dy = abs(a.y - b.y)
-        k = (a.y - b.y) / (a.x - b.x)
-    var
-        x = a.x
-        y = a.y
-        antinodes: seq[Pos]
-    while inBounds((x, y)):
-        antinodes.add((x, y))
-        x += dx
-        if k >= 0: y += dy else: y -= dy
-    x = a.x - dx
-    if k >= 0: y = a.y - dy else: y = a.y + dy
-    while inBounds((x, y)):
-        antinodes.add((x, y))
-        x -= dx
-        if k >= 0: y -= dy else: y += dy
-    return antinodes
-
-var antennasByFrequency = newTable[char, seq[Pos]]()
+var antennasByFrequency = newTable[char, seq[(int, int)]]()
 for y in 0..<grid.len:
     for x in 0..<grid[0].len:
         let c = grid[y][x]
@@ -49,14 +12,30 @@ for y in 0..<grid.len:
         antennasByFrequency.mgetOrPut(c, @[]).add((x, y))
 
 var
-    antinodesPart1: HashSet[Pos]
-    antinodesPart2: HashSet[Pos]
-for c, nodes in antennasByFrequency:
-    for i in 0..<nodes.len-1:
-        for j in i+1..<nodes.len:
-            for node in getTwoAntinodes(nodes[i], nodes[j]):
-                antinodesPart1.incl(node)
-            for node in getAllAntinodes(nodes[i], nodes[j]):
-                antinodesPart2.incl(node)
-echo antinodesPart1.len
+    antinodesPart1: HashSet[(int, int)]
+    antinodesPart2: HashSet[(int, int)]
+for antennas in antennasByFrequency.values:
+    for i in 0..<antennas.len-1:
+        for j in i+1..<antennas.len:
+            let
+                (x1, y1) = antennas[i]
+                (x2, y2) = antennas[j]
+                dx = x2 - x1
+                dy = y2 - y1
+            antinodesPart1.incl((x1 - dx, y1 - dy))
+            antinodesPart1.incl((x2 + dx, y2 + dy))
+            var
+                x = x1
+                y = y1
+            while inBounds(x, y):
+                antinodesPart2.incl((x, y))
+                x += dx
+                y += dy
+            x = x1
+            y = y1
+            while inBounds(x, y):
+                antinodesPart2.incl((x, y))
+                x -= dx
+                y -= dy
+echo antinodesPart1.toSeq.filterIt(inBounds(it[0], it[1])).len
 echo antinodesPart2.len
