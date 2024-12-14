@@ -1,24 +1,27 @@
-import std/[sequtils, strutils]
+import std/[math, sequtils, strutils, sugar, tables]
 
 var stones = readAll(stdin).strip.splitWhitespace.mapIt(it.parseInt)
 
-for i in 0..<25:
-    var j = 0
-    while j < stones.len:
-        let stone = stones[j]
-        if stone == 0:
-            stones[j] = 1
+let cache = newTable[(int, int), int]()
+proc count(stone, blinksLeft: int): int =
+    if (stone, blinksLeft) in cache:
+        return cache[(stone, blinksLeft)]
+    var returnValue: int
+    if blinksLeft == 0:
+        returnValue = 1
+    elif stone == 0:
+        returnValue = count(1, blinksLeft - 1)
+    else:
+        let stoneStr = intToStr(stone)
+        if stoneStr.len mod 2 == 0:
+            let
+                l = parseInt(stoneStr[0 .. int(stoneStr.len/2)-1])
+                r = parseInt(stoneStr[int(stoneStr.len/2) .. ^1])
+            returnValue = count(l, blinksLeft - 1) + count(r, blinksLeft - 1)
         else:
-            let s = intToStr(stone)
-            if s.len mod 2 == 0:
-                let
-                    l = parseInt(s[0 .. int(s.len/2)-1])
-                    r = parseInt(s[int(s.len/2) .. ^1])
-                stones[j] = l
-                stones.insert(r, j + 1)
-                j += 1
-            else:
-                stones[j] = stone * 2024
-        j += 1
+            returnValue = count(stone * 2024, blinksLeft - 1)
+    cache[(stone, blinksLeft)] = returnValue
+    return returnValue
 
-echo stones.len
+echo stones.map(stone => count(stone, 25)).sum()
+echo stones.map(stone => count(stone, 75)).sum()
