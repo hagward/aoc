@@ -1,54 +1,64 @@
-import std/[heapqueue, math, sequtils, strutils, sugar, tables]
+import std/[heapqueue, options, sequtils, strformat, strutils, sugar, tables]
+
+type
+  Point = tuple[x, y: int]
+  Node = ref object
+    point: Point
+    g: int
+    f: int
+
+proc `<`(a, b: Node): bool = a.f < b.f
+
+proc h(a, b: Point): int = abs(a.x - b.x) + abs(a.y - b.y)
+
+let input = readAll(stdin).strip.splitLines.map(line => line.split(",").mapIt(it.parseInt))
 
 var grid: array[71, array[71, bool]]
-
-var i = 0
-for nums in readAll(stdin).strip.splitLines.map(line => line.split(",").mapIt(it.parseInt)):
-    if i == 1024: break
-    i += 1
+for i in 0..<1024:
     let
-        x = nums[0]
-        y = nums[1]
+        x = input[i][0]
+        y = input[i][1]
     grid[y][x] = true
 
-# for i in 0..<grid.len:
-#     for j in 0..<grid[0].len:
-#         if grid[i][j]:
-#             stdout.write '#'
-#         else:
-#             stdout.write '.'
-#     echo ""
+proc aStar(start, goal: Point): Option[int] =
+    let startNode = Node(point: start, g: 0, f: h(start, goal))
+    var
+        heap = [startNode].toHeapQueue
+        visited: Table[Point, Node]
+    visited[start] = startNode
 
-let start = (0, 0)
-let goal = (grid[0].len-1, grid.len-1)
+    while heap.len > 0:
+        let currentNode = heap.pop
 
-proc h(node: (int, int)): int = abs(goal[0] - node[0]) + abs(goal[1] - node[1])
+        if currentNode.point == goal:
+            return some(currentNode.g)
 
-var gScore: Table[(int, int), int]
-gScore[start] = 0
+        for (dx, dy) in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+            let
+                x = currentNode.point.x + dx
+                y = currentNode.point.y + dy
+            if x < 0 or x >= grid[0].len or y < 0 or y >= grid.len or grid[y][x]:
+                continue
+            let neighbor = (x, y)
+            let neighborNode = if visited.contains(neighbor): visited[neighbor] else: Node(point: neighbor, g: high(int), f: high(int))
+            let tentativeGScore = currentNode.g + 1
+            if tentativeGScore < neighborNode.g:
+                neighborNode.g = tentativeGScore
+                neighborNode.f = tentativeGScore + h(neighbor, goal)
+                heap.push(neighborNode)
+                visited[neighbor] = neighborNode
+    return none(int)
 
-var fScore: Table[(int, int), int]
-fScore[start] = h(start)
+let start = Point((0, 0))
+let goal = Point((grid[0].len - 1, grid.len - 1))
 
-proc `<`(a, b: (int, int)): bool = fScore.getOrDefault(a, high(int)) < fScore.getOrDefault(b, high(int))
-var openSet = [start].toHeapQueue()
+echo aStar(start, goal).get()
 
-while openSet.len > 0:
-    let current = openSet.pop
-    if current == goal:
-        echo gScore[goal]
+for i in 1024..<input.len:
+    let
+        x = input[i][0]
+        y = input[i][1]
+    grid[y][x] = true
+    if aStar(start, goal).isNone:
+        echo fmt"{x},{y}"
         break
-    for (dx, dy) in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
-        let x = current[0] + dx
-        let y = current[1] + dy
-        if x < 0 or x >= grid[0].len or y < 0 or y >= grid.len:
-            continue
-        if grid[y][x]:
-            continue
-        let neighbor = (x, y)
-        let tentativeGScore = gScore.getOrDefault(current, high(int)) + 1
-        if tentativeGScore < gScore.getOrDefault(neighbor, high(int)):
-            gScore[neighbor] = tentativeGScore
-            fScore[neighbor] = tentativeGScore + h(neighbor)
-            if not openSet.contains(neighbor):
-                openSet.push(neighbor)
